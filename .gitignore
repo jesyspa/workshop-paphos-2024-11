@@ -1,0 +1,5 @@
+dist-newstyle/
+Notes/Hour*.pdf
+
+*.hi
+*.o
