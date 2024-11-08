@@ -16,8 +16,15 @@ library
     default-extensions: NoMonomorphismRestriction, GADTs, StandaloneDeriving, TypeOperators,
                         DeriveFunctor, DeriveFoldable, ExplicitForAll, ScopedTypeVariables,
                         KindSignatures
-    other-modules:    Exercises.Hour1, Exercises.Hour2,
-                      Lectures.Hour1, Lectures.Hour2
+    other-modules:
+        -- Exercises
+        Exercises.Hour1,
+        Exercises.Hour2,
+        -- Student work
+        StudentWork.Example,
+        -- Lectures
+        Lectures.Hour1,
+        Lectures.Hour2
     build-depends:    base ^>=4.17.2.1
     hs-source-dirs:   src
     default-language: Haskell2010
