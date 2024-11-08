@@ -1,6 +1,9 @@
 module Exercises.Hour1 where
 import Lectures.Hour1
 
+-- >>> 2 + 2
+-- 4
+
 --- Functions ---
 
 -- In Haskell, it is common to define functions very generically.
