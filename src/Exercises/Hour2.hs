@@ -26,6 +26,12 @@ deriving instance Show a => Show (Exp a)
 
 -- Define functions for evaluating an expression and for taking the derivative of an expression.
 
+-- So implement:
+-- 1. Functor instance
+-- 2. Foldable instance
+-- 3. Fold function
+-- 4. Evaluation function
+-- 5. Derivative function
 
 --- Your Own Datatype ---
 
