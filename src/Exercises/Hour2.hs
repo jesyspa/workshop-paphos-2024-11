@@ -51,7 +51,7 @@ instance MyMonoid MulInt where
     mzero = undefined
     (<+>) = undefined
 
--- Use MulInt and monoidFold to implement the factorial function.
+-- Use MulInt and foldMap to implement the factorial function.
 factorial :: Int -> Int
 factorial = undefined
 
