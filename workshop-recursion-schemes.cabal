@@ -20,11 +20,13 @@ library
         -- Exercises
         Exercises.Hour1,
         Exercises.Hour2,
+        Exercises.Hour3,
         -- Student work
         StudentWork.Example,
         -- Lectures
         Lectures.Hour1,
-        Lectures.Hour2
+        Lectures.Hour2,
+        Lectures.Hour3,
     build-depends:    base ^>=4.17.2.1
     hs-source-dirs:   src
     default-language: Haskell2010
