@@ -74,6 +74,16 @@ class MyMonoid a where
 
 -- Let's look at the monoid for Int with (+) operation (Add, getAdd)
 
+data Add where
+    Add :: Int -> Add
+
+getAdd :: Add -> Int
+getAdd (Add x) = x
+
+instance MyMonoid Add where
+    mzero = Add 0
+    Add x <+> Add y = Add (x + y)
+
 
 ------------------- Typeclasses: Functor -------------------
 
@@ -81,16 +91,22 @@ class MyFunctor (f :: * -> *) where
     myFmap :: (a -> b) -> f a -> f b
 
 instance MyFunctor MyMaybe where
-    myFmap = undefined
+    myFmap f = go
+        where go MyNothing = MyNothing
+              go (MyJust x) = MyJust (f x)
 
 instance MyFunctor [] where
-    myFmap = undefined
+    myFmap f = go
+        where go [] = []
+              go (x:xs) = f x : go xs
 
 instance MyFunctor BinTree where
-    myFmap = undefined
+    myFmap = mapTree
 
 -- What else that we've seen so far is a functor?
 -- What *isn't* a functor?
+
+
 
 
 ------------------- Typeclasses: Foldable ------------------
@@ -99,17 +115,30 @@ class MyFoldable (t :: * -> *) where
     myFoldMap :: MyMonoid r => (a -> r) -> t a -> r
 
 instance MyFoldable [] where
-    myFoldMap = undefined
+    myFoldMap f = go
+        where go [] = mzero
+              go (x:xs) = f x <+> go xs
 
 instance MyFoldable BinTree where
-    myFoldMap = undefined
+    myFoldMap f = go
+        where go (Node left v right) = go left <+> f v <+> go right
+              go (Leaf x) = f x
 
 -- What else is foldable?
 -- What isn't foldable?
 
 myLength :: MyFoldable t => t a -> Int
-myLength = undefined
+myLength ts = getAdd (myFoldMap (const (Add 1)) ts)
+
+-- >>> myLength [1, 2, 3]
+-- 3
 
 -- What is myLength (MyJust 5)?
 
+-- >>> length (Const 5)
+-- Data constructor not in scope:
+--   Const :: t0_a3hwZ[tau:1] -> t1_a3hwR[tau:1] a0_a3hwT[tau:1]
+
+--- >>> :k (,,)
+-- (,) :: * -> * -> *
 

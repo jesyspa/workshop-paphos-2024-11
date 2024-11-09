@@ -3,14 +3,22 @@ import Lectures.Hour2
 
 --- Expressions ---
 
+data Op where
+    PlusOp :: Op
+    MulOp :: Op
+
 -- Let's look at mathematical expressions again.
 -- We will make the variable types a type variable.
 data Exp a where
     EConst :: Int -> Exp a
     EVar :: a -> Exp a
+    EOp :: Op -> Exp a -> Exp a -> Exp a
+    -- ECall :: Exp a -> Exp a -> Exp a
+    -- ELam :: a -> Exp a -> Exp a
 
 -- The next line will let you show expressions.  You may need to remove it if you
 -- modify the definition of expression in a way that makes showing one impossible.
+deriving instance Show Op
 deriving instance Show a => Show (Exp a)
 
 -- Add more cases to the Exp class to support common operations.
