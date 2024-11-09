@@ -5,16 +5,25 @@ import Lectures.Hour1 (mapList)
 
 
 data MyBool where
+    MyFalse :: MyBool
+    MyTrue :: MyBool
 
 data MyPair a b where
+    MyPair :: a -> b -> MyPair a b
 
 data MyEither a b where
+    MyLeft :: a -> MyEither a b
+    MyRight :: b -> MyEither a b
 
 data MyList a where
+    MyNil :: MyList a
+    MyCons :: a -> MyList a -> MyList a
 
 -- New example: Maybe a is either an a or nothing.
 -- Haskell doesn't have null, Maybe is usually used instead.
 data MyMaybe a where
+    MyNothing :: MyMaybe a
+    MyJust :: a -> MyMaybe a
 
 -- To make sure we can show these things:
 deriving instance Show MyBool
@@ -24,21 +33,32 @@ deriving instance Show a => Show (MyList a)
 deriving instance Show a => Show (MyMaybe a)
 
 mySafeHead :: MyList a -> MyMaybe a
-mySafeHead = undefined
+mySafeHead MyNil = MyNothing
+mySafeHead (MyCons x xs) = MyJust x
 
 mapMaybe :: (a -> b) -> MyMaybe a -> MyMaybe b
-mapMaybe = undefined
+-- mapMaybe f (MyJust x) = MyJust (f x)
+-- mapMaybe f MyNothing = MyNothing
+mapMaybe f = go
+    where go MyNothing = MyNothing
+          go (MyJust x) = MyJust (f x) 
 
 -- New example: binary trees
 data BinTree a where
+    Node :: BinTree a -> a -> BinTree a -> BinTree a
+    Leaf :: a -> BinTree a
 
 deriving instance Show a => Show (BinTree a)
 
 mapTree :: (a -> b) -> BinTree a -> BinTree b
-mapTree = undefined
+mapTree f = go
+    where go (Node left v right) = Node (go left) (f v) (go right)
+          go (Leaf x) = Leaf (f x)
 
-foldTree :: (a -> r) -> (r -> r -> r) -> BinTree a -> r
-foldTree = undefined
+foldTree :: (a -> r) -> (r -> a -> r -> r) ->     BinTree a -> r
+foldTree g f = go
+    where go (Leaf x) = g x
+          go (Node left v right) = f (go left) v (go right)
 
 flatMapTree :: BinTree a -> (a -> BinTree b) -> BinTree b
 flatMapTree = undefined
