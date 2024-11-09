@@ -1,5 +1,6 @@
 module Exercises.Hour1 where
 import Lectures.Hour1
+import Prelude hiding (flip)
 
 --- Functions ---
 
@@ -8,46 +9,51 @@ import Lectures.Hour1
 -- can be implemented.  Use the types below to guide you.
 
 apply :: (a -> b) -> a -> b
-apply = undefined
+apply f x = f x 
 
 compose :: (b -> c) -> (a -> b) -> a -> c
-compose = undefined
+compose f g x = f (g x)
 
 flip :: (a -> b -> c) -> b -> a -> c
-flip = undefined
+flip f x y = f y x
 
 joinParam :: (a -> a -> b) -> a -> b
-joinParam = undefined
+joinParam f x = f x x
 
 composeWithParam :: (a -> b) -> (b -> a -> c) -> a -> c
-composeWithParam = undefined
+composeWithParam f g x = g (f x) x
 
 
 --- Booleans ---
 
 myNot :: Bool -> Bool
-myNot = undefined
+myNot True = False
+myNot False = True
 
 myAnd :: Bool -> Bool -> Bool
-myAnd = undefined
+myAnd True x = x
+myAnd False _ = False
 
 -- a implies b if whenever a is true, so is b.
 myImplies :: Bool -> Bool -> Bool
-myImplies = undefined
+myImplies True False = False
+myImplies _ _ = True
+
 
 
 --- Integers ---
 
 myMax :: Int -> Int -> Int
-myMax = undefined
+myMax x y = if x > y then x else y
 
 myAbs :: Int -> Int
-myAbs = undefined
+myAbs x = myMax x (-x)
 
 -- The factorial of n is the product of all numbers 1 through n (inclusive).
 -- For this exercise, it is okay if factorial n does not terminate if n < 0.
 factorial :: Int -> Int
-factorial = undefined
+factorial 0 = 1
+factorial n = n * factorial (n - 1)
 
 
 --- Pairs ---
@@ -59,10 +65,10 @@ factorial = undefined
 -- (Haskell itself is also named after him.)
 -- The two functions below implement the equivalence.
 myCurry :: ((a, b) -> c) -> a -> b -> c
-myCurry = undefined
+myCurry f x y = f (x, y)
 
 myUncurry :: (a -> b -> c) -> ((a, b) -> c)
-myUncurry = undefined
+myUncurry f (x, y) = f x y
 
 -- map is a generic term used to refer to applying a function to
 -- the parts of a data structure that it can work on.  In other words,
@@ -70,14 +76,16 @@ myUncurry = undefined
 -- map it to turn it into a function that applies to the type as a whole.
 -- Here is an example for pairs.
 mapSnd :: (a -> b) -> (c, a) -> (c, b)
-mapSnd = undefined
+mapSnd f (x, y) = (x, f y)
+
+mapFst :: (a -> b) -> (a, c) -> (b, c)
+mapFst f (x, y) = (f x, y)
 
 -- Suppose p :: (Int, a) and  f :: a -> (Int, b)
 -- Then mapSnd f p :: (Int, (Int, b))
 -- Can you turn that into (Int, b) by adding the two Ints?
 composeAndAdd :: (Int, a) -> (a -> (Int, b)) -> (Int, b)
-composeAndAdd = undefined
-
+composeAndAdd (x, y) f = mapFst (+x) (f y)
 
 --- Either ---
 
@@ -85,13 +93,16 @@ composeAndAdd = undefined
 -- to Right x) or fail (by evaluating to Left y).
 
 isRight :: Either e a -> Bool
-isRight = undefined
+isRight (Right _) = True
+isRight _         = False
 
 mapRight :: (a -> b) -> Either e a -> Either e b
-mapRight = undefined
+mapRight f (Right x) = Right (f x)
+mapRight _ (Left x)  = Left x
 
 composeIfRight :: Either e a -> (a -> Either e b) -> Either e b
-composeIfRight = undefined
+composeIfRight (Right x) f = f x
+composeIfRight (Left x) _  = Left x
 
 
 --- Stateful computation ---
@@ -102,52 +113,62 @@ composeIfRight = undefined
 -- need some helper functions to make this convenient.
 
 mapWithState :: (a -> b) -> (s -> (s, a)) -> s -> (s, b)
-mapWithState = undefined
+mapWithState f g = mapSnd f . g
 
 composeWithState :: (s -> (s, a)) -> (a -> s -> (s, b)) -> s -> (s, b)
-composeWithState = undefined
+composeWithState f g = myUncurry (flip g) . f
 
 -- Let's write f(a) for s -> (s, a).
 -- Then this function has type f(f(a)) -> f(a).
 -- Such functions are generally called join.
 joinWithState :: (s -> (s, s -> (s, a))) -> s -> (s, a)
-joinWithState = undefined
+joinWithState f x = g st
+    where (st, g) = f x
 
 
 --- Lists ---
 
 myProduct :: [Int] -> Int
-myProduct = undefined
+myProduct = myFoldr (*) 1
 
 -- This is another example of a join function.
 myConcat :: [[a]] -> [a]
-myConcat = undefined
+myConcat = myFoldr (++) []
 
 -- Try implementing this in two ways:
 -- 1. Using `mapList` and `myConcat`.
 -- 2. By recursion.
 myConcatMap :: (a -> [b]) -> [a] -> [b]
-myConcatMap = undefined
+myConcatMap f = myFoldr (++) [] . map f
 
 -- The first parameter is a predicate p.  Return a list of only those
 -- elements for which p returns True.
 myFilter :: (a -> Bool) -> [a] -> [a]
-myFilter = undefined
+myFilter f [] = []
+myFilter f (x:xs) = if f x then [x] else [] ++ myFilter f xs
 
 filterRight :: [Either e a] -> [a]
-filterRight = undefined
+filterRight []             = []
+filterRight ((Left x):xs)  = filterRight xs
+filterRight ((Right x):xs) = x : filterRight xs
+
 
 myZip :: [a] -> [b] -> [(a, b)]
-myZip = undefined
+myZip [] _ = []
+myZip _ [] = []
+myZip (x:xs) (y:ys) = (x, y) : myZip xs ys
+
 
 -- Compose all the functions in the list: composeMany [f, g, h] = compose f (compose g h)
 composeMany :: [(a -> a)] -> a -> a
-composeMany = undefined
+composeMany [] = id
+composeMany (f:fs) = compose f (composeMany fs)
 
 -- This is a right fold over the list: foldr f e [a, b, c] is f a (f b (f c e)).
 -- With a binary operator it is a little easier to see what's going on:
 -- foldr (+) 0 [1, 2, 3] = 1 + (2 + (3 + 0))
 myFoldr :: (a -> b -> b) -> b -> [a] -> b
-myFoldr = undefined
+myFoldr f x [] = x
+myFoldr f x (y:ys) = f y (myFoldr f x ys)
 
 -- Try rewriting the list functions you've seen so far using myFoldr.

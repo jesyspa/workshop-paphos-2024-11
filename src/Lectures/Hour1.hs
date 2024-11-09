@@ -12,9 +12,11 @@ Let's also look at an example: expressions.
 
 ------------------------- Functions ------------------------
 
-myId = undefined
+myId :: a -> a
+myId x = x
 
-myConst = undefined
+myConst :: a -> b -> a
+myConst x _ = x
 
 
 --------------------------- Bools --------------------------
@@ -22,18 +24,17 @@ myConst = undefined
 -- A Boolean is either True or False.
 
 myOr :: Bool -> Bool -> Bool
-myOr = undefined
+myOr True _ = True
+myOr _ x    = x
 
 
 ------------------------- Integers -------------------------
 
 -- An Int is a value between -2^31 and 2^31-1.
 
-ex1 :: Int
-ex1 = undefined
-
 myMin :: Int -> Int -> Int
-myMin = undefined
+myMin a b | a > b  = a
+myMin a b | a <= b = b
 
 
 -------------------------- Pairs ---------------------------
@@ -41,16 +42,16 @@ myMin = undefined
 -- A pair (A, B) is an A together with a B.
 
 myFst :: (a, b) -> a
-myFst = undefined
+myFst (x, y) = x
 
 swap :: (a, b) -> (b, a)
-swap = undefined
+swap (x, y) = (y, x)
 
 mapPair :: (a -> b) -> (a, a) -> (b, b)
-mapPair = undefined
+mapPair f (x, y) = (f x, f y)
 
 diagonal :: a -> (a, a)
-diagonal = undefined
+diagonal x = (x, x)
 
 
 ------------------------- Either ---------------------------
@@ -58,13 +59,16 @@ diagonal = undefined
 -- An Either A B is either a Left A or a Right B.
 
 leftOr :: Either a b -> a -> a
-leftOr = undefined
+leftOr (Left x) y = x
+leftOr _        y = y
 
 codiagonal :: Either a a -> a
-codiagonal = undefined
+codiagonal (Left x) = x
+codiagonal (Right x) = x
 
 mapEither :: (a -> b) -> Either a a -> Either b b
-mapEither = undefined
+mapEither f (Left x) = Left (f x)
+mapEither f (Right x) = Right (f x)
 
 
 ----------------- Lists and Pattern Matching ---------------
@@ -75,7 +79,8 @@ mapEither = undefined
 -- * a "cons" cell of the form x:xs
 
 headOr :: [a] -> a -> a
-headOr = undefined
+headOr [] x = x
+headOr (y:_) _ = y
 
 myLength :: [a] -> Int
 myLength = undefined
