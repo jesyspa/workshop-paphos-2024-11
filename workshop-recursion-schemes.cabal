@@ -22,6 +22,7 @@ library
         Exercises.Hour2,
         -- Student work
         StudentWork.Example,
+        StudentWork.Miko,
         -- Lectures
         Lectures.Hour1,
         Lectures.Hour2
